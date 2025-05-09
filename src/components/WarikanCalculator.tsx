@@ -13,16 +13,21 @@ interface Result {
 }
 
 const WarikanCalculator: React.FC = () => {
-  const [participantCount, setParticipantCount] = useState<number>(0);
+  const [participantCount, setParticipantCount] = useState<string>('');
   const [people, setPeople] = useState<Person[]>([]);
   const [result, setResult] = useState<Result | null>(null);
 
   const handleParticipantCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const count = Number(e.target.value);
-    setParticipantCount(count);
-    
+    const value = e.target.value;
+    setParticipantCount(value);
+    const count = Number(value);
+    if (!value || count < 1) {
+      setPeople([]);
+      setResult(null);
+      return;
+    }
     const newPeople = Array.from({ length: count }, (_, i) => ({
-      name: String.fromCharCode(65 + i),
+      name: String.fromCharCode(65 + i) + 'さん',
       amount: 0,
       expression: ''
     }));
@@ -107,39 +112,24 @@ const WarikanCalculator: React.FC = () => {
   };
 
   return (
-    <div style={{ 
-      maxWidth: '1400px', 
-      margin: '0 auto', 
-      padding: 'clamp(10px, 5vw, 20px)',
-      width: '100%',
-      boxSizing: 'border-box'
-    }}>
+    <div className="warikan-root">
       <h1 style={{ 
         textAlign: 'center', 
         marginBottom: 'clamp(20px, 5vw, 30px)',
-        fontSize: 'clamp(1.5rem, 4vw, 2rem)'
-      }}>割り勘計算</h1>
-      
-      <div style={{ 
-        display: 'flex', 
-        flexDirection: 'row',
-        gap: 'clamp(15px, 3vw, 20px)',
-        backgroundColor: '#f5f5f5',
-        padding: 'clamp(15px, 3vw, 20px)',
-        borderRadius: '8px',
-        flexWrap: 'wrap'
+        fontSize: 'clamp(1.5rem, 4vw, 2rem)',
+        color: '#2c3e50',
+        fontWeight: 'bold',
+        letterSpacing: '0.05em'
       }}>
-        <div style={{ 
-          flex: '1 1 400px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 'clamp(15px, 3vw, 20px)'
-        }}>
+        割り勘計算
+      </h1>
+      <div className="warikan-main">
+        <div className="warikan-card">
           <div style={{ 
             backgroundColor: 'white',
             padding: 'clamp(15px, 3vw, 20px)',
-            borderRadius: '8px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+            borderRadius: '12px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
           }}>
             <div style={{ 
               display: 'flex', 
@@ -148,7 +138,11 @@ const WarikanCalculator: React.FC = () => {
             }}>
               <label style={{ 
                 fontWeight: 'bold',
-                fontSize: 'clamp(1rem, 2vw, 1.1rem)'
+                fontSize: 'clamp(1rem, 2vw, 1.1rem)',
+                color: '#2c3e50',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
               }}>
                 参加人数:
               </label>
@@ -159,27 +153,30 @@ const WarikanCalculator: React.FC = () => {
                 onChange={handleParticipantCountChange}
                 style={{ 
                   padding: '12px',
-                  borderRadius: '4px',
-                  border: '1px solid #ddd',
+                  borderRadius: '8px',
+                  border: '1px solid #e0e0e0',
                   fontSize: '1rem',
                   width: '100%',
-                  maxWidth: '300px'
+                  maxWidth: '100%',
+                  backgroundColor: '#f8f9fa',
+                  transition: 'all 0.3s ease',
+                  boxSizing: 'border-box'
                 }}
               />
             </div>
           </div>
 
           {people.length > 0 && (
-            <div style={{ 
-              backgroundColor: 'white',
-              padding: 'clamp(15px, 3vw, 20px)',
-              borderRadius: '8px',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
-            }}>
+            <div className="warikan-card" style={{ marginTop: '2vw' }}>
               <h2 style={{ 
                 marginBottom: 'clamp(15px, 3vw, 20px)',
-                fontSize: 'clamp(1.2rem, 3vw, 1.5rem)'
-              }}>支払い情報</h2>
+                fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
+                color: '#2c3e50',
+                fontWeight: 'bold',
+                letterSpacing: '0.05em'
+              }}>
+                支払い情報
+              </h2>
               <div style={{ 
                 display: 'flex', 
                 flexDirection: 'column', 
@@ -191,8 +188,9 @@ const WarikanCalculator: React.FC = () => {
                     flexDirection: 'column',
                     gap: 'clamp(10px, 2vw, 15px)',
                     padding: 'clamp(15px, 3vw, 20px)',
-                    backgroundColor: '#f9f9f9',
-                    borderRadius: '8px'
+                    backgroundColor: '#f8f9fa',
+                    borderRadius: '12px',
+                    border: '1px solid #e0e0e0'
                   }}>
                     <div style={{ 
                       display: 'flex',
@@ -201,18 +199,26 @@ const WarikanCalculator: React.FC = () => {
                     }}>
                       <label style={{ 
                         fontWeight: 'bold',
-                        fontSize: 'clamp(1rem, 2vw, 1.1rem)'
-                      }}>名前:</label>
+                        fontSize: 'clamp(1rem, 2vw, 1.1rem)',
+                        color: '#2c3e50',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}>
+                        名前:
+                      </label>
                       <input
                         type="text"
                         value={person.name}
                         onChange={(e) => handlePersonChange(index, 'name', e.target.value)}
                         style={{ 
                           padding: '12px',
-                          borderRadius: '4px',
-                          border: '1px solid #ddd',
+                          borderRadius: '8px',
+                          border: '1px solid #e0e0e0',
                           fontSize: '1rem',
-                          width: '100%'
+                          width: '100%',
+                          backgroundColor: 'white',
+                          transition: 'all 0.3s ease'
                         }}
                       />
                     </div>
@@ -223,8 +229,14 @@ const WarikanCalculator: React.FC = () => {
                     }}>
                       <label style={{ 
                         fontWeight: 'bold',
-                        fontSize: 'clamp(1rem, 2vw, 1.1rem)'
-                      }}>支払額:</label>
+                        fontSize: 'clamp(1rem, 2vw, 1.1rem)',
+                        color: '#2c3e50',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '8px'
+                      }}>
+                        支払額:
+                      </label>
                       <div style={{ 
                         display: 'flex', 
                         flexDirection: 'column', 
@@ -237,16 +249,21 @@ const WarikanCalculator: React.FC = () => {
                           placeholder="例: 1000 + 500"
                           style={{ 
                             padding: '12px',
-                            borderRadius: '4px',
-                            border: '1px solid #ddd',
+                            borderRadius: '8px',
+                            border: '1px solid #e0e0e0',
                             fontSize: '1rem',
-                            width: '100%'
+                            width: '100%',
+                            backgroundColor: 'white',
+                            transition: 'all 0.3s ease'
                           }}
                         />
                         <div style={{ 
                           fontSize: '0.9rem', 
                           color: '#666',
-                          marginTop: '5px'
+                          marginTop: '5px',
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '4px'
                         }}>
                           計算結果: {person.amount}円
                         </div>
@@ -263,13 +280,18 @@ const WarikanCalculator: React.FC = () => {
                   backgroundColor: '#4CAF50',
                   color: 'white',
                   border: 'none',
-                  borderRadius: '4px',
+                  borderRadius: '8px',
                   cursor: 'pointer',
                   fontSize: '1rem',
                   width: '100%',
                   maxWidth: '300px',
                   margin: '20px auto',
-                  display: 'block'
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px',
+                  transition: 'all 0.3s ease',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
                 }}
               >
                 計算する
@@ -279,29 +301,30 @@ const WarikanCalculator: React.FC = () => {
         </div>
 
         {result && (
-          <div style={{ 
-            flex: '1 1 400px',
-            backgroundColor: 'white',
-            padding: 'clamp(15px, 3vw, 20px)',
-            borderRadius: '8px',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 'clamp(15px, 3vw, 20px)'
-          }}>
+          <div className="warikan-card">
             <h2 style={{ 
               marginBottom: 'clamp(15px, 3vw, 20px)',
-              fontSize: 'clamp(1.2rem, 3vw, 1.5rem)'
-            }}>計算結果</h2>
+              fontSize: 'clamp(1.2rem, 3vw, 1.5rem)',
+              color: '#2c3e50',
+              fontWeight: 'bold',
+              letterSpacing: '0.05em'
+            }}>
+              計算結果
+            </h2>
             <div style={{ 
               padding: 'clamp(15px, 3vw, 20px)',
-              backgroundColor: '#f9f9f9',
-              borderRadius: '8px',
-              marginBottom: 'clamp(15px, 3vw, 20px)'
+              backgroundColor: '#f8f9fa',
+              borderRadius: '12px',
+              marginBottom: 'clamp(15px, 3vw, 20px)',
+              border: '1px solid #e0e0e0'
             }}>
               <p style={{ 
                 fontSize: 'clamp(1rem, 2vw, 1.2rem)',
-                marginBottom: '0'
+                marginBottom: '0',
+                color: '#2c3e50',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px'
               }}>
                 1人あたりの支払額: <span style={{ fontWeight: 'bold' }}>{result.average.toFixed(0)}円</span>
               </p>
@@ -309,8 +332,13 @@ const WarikanCalculator: React.FC = () => {
 
             <h3 style={{ 
               marginBottom: 'clamp(10px, 2vw, 15px)',
-              fontSize: 'clamp(1.1rem, 2vw, 1.2rem)'
-            }}>支払いの流れ</h3>
+              fontSize: 'clamp(1.1rem, 2vw, 1.2rem)',
+              color: '#2c3e50',
+              fontWeight: 'bold',
+              letterSpacing: '0.05em'
+            }}>
+              支払いの流れ
+            </h3>
             <div style={{ 
               display: 'flex',
               flexDirection: 'column',
@@ -319,17 +347,18 @@ const WarikanCalculator: React.FC = () => {
               {result.payments.map((payment, index) => (
                 <div key={index} style={{ 
                   padding: 'clamp(12px, 2vw, 15px)',
-                  backgroundColor: '#f9f9f9',
-                  borderRadius: '8px',
+                  backgroundColor: '#f8f9fa',
+                  borderRadius: '12px',
                   fontSize: 'clamp(1rem, 2vw, 1.1rem)',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '10px'
+                  gap: '10px',
+                  border: '1px solid #e0e0e0'
                 }}>
-                  <span style={{ color: '#f44336' }}>{payment.from}</span>
-                  <span>→</span>
-                  <span style={{ color: '#4CAF50' }}>{payment.to}</span>
-                  <span style={{ marginLeft: 'auto', fontWeight: 'bold' }}>
+                  <span style={{ color: '#f44336', fontWeight: 'bold' }}>{payment.from}</span>
+                  <span style={{ color: '#666' }}>→</span>
+                  <span style={{ color: '#4CAF50', fontWeight: 'bold' }}>{payment.to}</span>
+                  <span style={{ marginLeft: 'auto', fontWeight: 'bold', color: '#2c3e50' }}>
                     {payment.amount.toFixed(0)}円
                   </span>
                 </div>
@@ -339,8 +368,13 @@ const WarikanCalculator: React.FC = () => {
             <h3 style={{ 
               marginTop: 'clamp(20px, 4vw, 30px)',
               marginBottom: 'clamp(10px, 2vw, 15px)',
-              fontSize: 'clamp(1.1rem, 2vw, 1.2rem)'
-            }}>各人の支払額の差分</h3>
+              fontSize: 'clamp(1.1rem, 2vw, 1.2rem)',
+              color: '#2c3e50',
+              fontWeight: 'bold',
+              letterSpacing: '0.05em'
+            }}>
+              各人の支払額の差分
+            </h3>
             <ul style={{ 
               listStyle: 'none', 
               padding: 0,
@@ -351,13 +385,18 @@ const WarikanCalculator: React.FC = () => {
               {result.differences.map((diff, index) => (
                 <li key={index} style={{ 
                   padding: 'clamp(12px, 2vw, 15px)',
-                  backgroundColor: '#f9f9f9',
-                  borderRadius: '8px',
-                  fontSize: 'clamp(1rem, 2vw, 1.1rem)'
+                  backgroundColor: '#f8f9fa',
+                  borderRadius: '12px',
+                  fontSize: 'clamp(1rem, 2vw, 1.1rem)',
+                  border: '1px solid #e0e0e0',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
                 }}>
                   {diff.name}: <span style={{ 
                     color: diff.difference > 0 ? '#4CAF50' : '#f44336',
-                    fontWeight: 'bold'
+                    fontWeight: 'bold',
+                    marginLeft: 'auto'
                   }}>
                     {diff.difference > 0 ? '+' : ''}{diff.difference.toFixed(0)}円
                   </span>
