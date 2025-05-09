@@ -26,6 +26,8 @@ const WarikanCalculator: React.FC = () => {
   const [participantCount, setParticipantCount] = useState<string>('');
   const [people, setPeople] = useState<Person[]>([]);
   const [result, setResult] = useState<Result | null>(null);
+  const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const handleParticipantCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
@@ -122,15 +124,14 @@ const WarikanCalculator: React.FC = () => {
     setResult({ average, differences, payments });
 
     // 計算ボタン押下時にURLを最新に更新
-    if (!targetPeople && people.length > 0) {
+    if (people.length > 0) {
       const data = encodeURIComponent(toBase64(JSON.stringify({ people })));
       const url = new URL(window.location.href);
       url.searchParams.set('data', data);
       console.log('URL更新:', url.toString());
       window.history.replaceState(null, '', url.toString());
-      setTimeout(() => {
-        console.log('アドレスバー:', window.location.href);
-      }, 100);
+      setShareUrl(url.toString());
+      setCopied(false);
     }
   };
 
@@ -448,6 +449,24 @@ const WarikanCalculator: React.FC = () => {
                 </li>
               ))}
             </ul>
+
+            {shareUrl && (
+              <div style={{ margin: '32px 0', textAlign: 'center' }}>
+                <div style={{ fontWeight: 'bold', marginBottom: 8 }}>計算結果をURLで共有できます！</div>
+                <div style={{ wordBreak: 'break-all', background: '#f8f9fa', border: '1px solid #e0e0e0', borderRadius: 8, padding: 8, marginBottom: 8 }}>{shareUrl}</div>
+                <button
+                  type="button"
+                  style={{ padding: '8px 16px', borderRadius: 8, background: '#4CAF50', color: 'white', border: 'none', cursor: 'pointer', fontWeight: 'bold' }}
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(shareUrl);
+                    setCopied(true);
+                  }}
+                >
+                  URLをコピー
+                </button>
+                {copied && <div style={{ color: '#4CAF50', marginTop: 8 }}>コピーしました！</div>}
+              </div>
+            )}
           </div>
         )}
       </div>
