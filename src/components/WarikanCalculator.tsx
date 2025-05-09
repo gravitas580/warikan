@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface Person {
   name: string;
@@ -110,6 +110,37 @@ const WarikanCalculator: React.FC = () => {
 
     setResult({ average, differences, payments });
   };
+
+  // URLから状態を復元
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const data = params.get('data');
+    if (data) {
+      try {
+        const decoded = JSON.parse(atob(decodeURIComponent(data)));
+        if (Array.isArray(decoded.people)) {
+          setPeople(decoded.people);
+          setParticipantCount(decoded.people.length.toString());
+        }
+      } catch (e) {
+        // 無視
+      }
+    }
+  }, []);
+
+  // 状態が変わるたびにURLを更新
+  useEffect(() => {
+    if (people.length === 0) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('data');
+      window.history.replaceState(null, '', url.toString());
+      return;
+    }
+    const data = encodeURIComponent(btoa(JSON.stringify({ people })));
+    const url = new URL(window.location.href);
+    url.searchParams.set('data', data);
+    window.history.replaceState(null, '', url.toString());
+  }, [people]);
 
   return (
     <div className="warikan-root">
