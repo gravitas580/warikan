@@ -12,6 +12,16 @@ interface Result {
   payments: { from: string; to: string; amount: number }[];
 }
 
+// UTF-8対応base64エンコード
+function toBase64(str: string) {
+  return window.btoa(unescape(encodeURIComponent(str)));
+}
+
+// UTF-8対応base64デコード
+function fromBase64(str: string) {
+  return decodeURIComponent(escape(window.atob(str)));
+}
+
 const WarikanCalculator: React.FC = () => {
   const [participantCount, setParticipantCount] = useState<string>('');
   const [people, setPeople] = useState<Person[]>([]);
@@ -97,11 +107,12 @@ const WarikanCalculator: React.FC = () => {
     return payments;
   };
 
-  const calculateWarikan = () => {
-    const total = people.reduce((sum, person) => sum + person.amount, 0);
-    const average = total / people.length;
+  const calculateWarikan = (targetPeople?: Person[]) => {
+    const usePeople = targetPeople || people;
+    const total = usePeople.reduce((sum, person) => sum + person.amount, 0);
+    const average = total / usePeople.length;
     
-    const differences = people.map(person => ({
+    const differences = usePeople.map(person => ({
       name: person.name,
       difference: person.amount - average
     }));
@@ -109,38 +120,41 @@ const WarikanCalculator: React.FC = () => {
     const payments = calculatePayments(differences);
 
     setResult({ average, differences, payments });
+
+    // 計算ボタン押下時にURLを最新に更新
+    if (!targetPeople && people.length > 0) {
+      const data = encodeURIComponent(toBase64(JSON.stringify({ people })));
+      const url = new URL(window.location.href);
+      url.searchParams.set('data', data);
+      console.log('URL更新:', url.toString());
+      window.history.replaceState(null, '', url.toString());
+      setTimeout(() => {
+        console.log('アドレスバー:', window.location.href);
+      }, 100);
+    }
   };
 
-  // URLから状態を復元
+  // URLから状態を復元（初回のみ）
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const data = params.get('data');
     if (data) {
       try {
-        const decoded = JSON.parse(atob(decodeURIComponent(data)));
+        const decoded = JSON.parse(fromBase64(decodeURIComponent(data)));
         if (Array.isArray(decoded.people)) {
           setPeople(decoded.people);
           setParticipantCount(decoded.people.length.toString());
+          // 計算結果も自動で表示
+          setTimeout(() => {
+            calculateWarikan(decoded.people);
+          }, 0);
         }
       } catch (e) {
         // 無視
       }
     }
+    // eslint-disable-next-line
   }, []);
-
-  // 状態が変わるたびにURLを更新
-  useEffect(() => {
-    if (people.length === 0) {
-      const url = new URL(window.location.href);
-      url.searchParams.delete('data');
-      window.history.replaceState(null, '', url.toString());
-      return;
-    }
-    const data = encodeURIComponent(btoa(JSON.stringify({ people })));
-    const url = new URL(window.location.href);
-    url.searchParams.set('data', data);
-    window.history.replaceState(null, '', url.toString());
-  }, [people]);
 
   return (
     <div className="warikan-root">
@@ -304,7 +318,7 @@ const WarikanCalculator: React.FC = () => {
                 ))}
               </div>
               <button 
-                onClick={calculateWarikan}
+                onClick={() => calculateWarikan()}
                 style={{
                   marginTop: 'clamp(15px, 3vw, 20px)',
                   padding: '12px 24px',
