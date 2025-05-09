@@ -167,7 +167,7 @@ const WarikanCalculator: React.FC = () => {
         fontWeight: 'bold',
         letterSpacing: '0.05em'
       }}>
-        割り勘計算
+        割り勘計算くん
       </h1>
       <div className="warikan-main">
         <div className="warikan-card">
@@ -410,45 +410,6 @@ const WarikanCalculator: React.FC = () => {
                 </div>
               ))}
             </div>
-
-            <h3 style={{ 
-              marginTop: 'clamp(20px, 4vw, 30px)',
-              marginBottom: 'clamp(10px, 2vw, 15px)',
-              fontSize: 'clamp(1.1rem, 2vw, 1.2rem)',
-              color: '#2c3e50',
-              fontWeight: 'bold',
-              letterSpacing: '0.05em'
-            }}>
-              各人の支払額の差分
-            </h3>
-            <ul style={{ 
-              listStyle: 'none', 
-              padding: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '10px'
-            }}>
-              {result.differences.map((diff, index) => (
-                <li key={index} style={{ 
-                  padding: 'clamp(12px, 2vw, 15px)',
-                  backgroundColor: '#f8f9fa',
-                  borderRadius: '12px',
-                  fontSize: 'clamp(1rem, 2vw, 1.1rem)',
-                  border: '1px solid #e0e0e0',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px'
-                }}>
-                  {diff.name}: <span style={{ 
-                    color: diff.difference > 0 ? '#4CAF50' : '#f44336',
-                    fontWeight: 'bold',
-                    marginLeft: 'auto'
-                  }}>
-                    {diff.difference > 0 ? '+' : ''}{diff.difference.toFixed(0)}円
-                  </span>
-                </li>
-              ))}
-            </ul>
 
             {shareUrl && (
               <div style={{ margin: '32px 0', textAlign: 'center' }}>
