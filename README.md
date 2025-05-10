@@ -1,25 +1,30 @@
-## AWS Amplify React+Vite Starter Template
+# 割り勘計算くん
 
-This repository provides a starter template for creating applications using React+Vite and AWS Amplify, emphasizing easy setup for authentication, API, and database capabilities.
+「割り勘計算くん」は、複数人での支払いを簡単・正確に計算し、誰が誰にいくら払えばよいかを自動で提案してくれるWebアプリです。
 
-## Overview
+## 主な特徴
+- 参加人数・名前・支払額（計算式もOK）を入力するだけで、割り勘計算がすぐできる
+- 「誰が誰にいくら払えばOK？」を自動でわかりやすく表示
+- URLで計算結果を簡単に共有できる
+- スマホ・PC両対応の見やすいデザイン
+- 日本語で直感的に使えるUI
 
-This template equips you with a foundational React application integrated with AWS Amplify, streamlined for scalability and performance. It is ideal for developers looking to jumpstart their project with pre-configured AWS services like Cognito, AppSync, and DynamoDB.
+## 使い方
+1. 参加人数を入力
+2. 各人の名前と支払額（例: 1000+500 など計算式もOK）を入力
+3. 「計算する」ボタンを押すと、1人あたりの支払額と支払いフローが表示されます
+4. 「URLをコピー」ボタンで計算結果を共有できます
 
-## Features
+## セットアップ方法（開発者向け）
+1. このリポジトリをクローン
+2. `cd warikan`
+3. `npm install`
+4. `npm run dev` でローカルサーバー起動
 
-- **Authentication**: Setup with Amazon Cognito for secure user authentication.
-- **API**: Ready-to-use GraphQL endpoint with AWS AppSync.
-- **Database**: Real-time database powered by Amazon DynamoDB.
+## 注意事項
+- このアプリはAIを活用して作成されました。
+- ご意見・ご要望はIssueやPRでお気軽にどうぞ！
 
-## Deploying to AWS
+---
 
-For detailed instructions on deploying your application, refer to the [deployment section](https://docs.amplify.aws/react/start/quickstart/#deploy-a-fullstack-app-to-aws) of our documentation.
-
-## Security
-
-See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
-
-## License
-
-This library is licensed under the MIT-0 License. See the LICENSE file.
+@Hibiki 
